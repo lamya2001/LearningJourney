@@ -6,6 +6,7 @@ struct ActivityView : View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @State private var showsEditor = false
+    @State private var showsCalendar = false
     
     init(goal: LearningGoal) {
         _viewModel = State(initialValue: ActivityViewModel(goal: goal))
@@ -97,12 +98,15 @@ struct ActivityView : View {
                 .navigationDestination(isPresented: $showsEditor) {
                     GoalEditorView(editing: viewModel.progress == .active ? viewModel.goal : nil)
                 }
+                .navigationDestination(isPresented: $showsCalendar) {
+                    ActivityCalendarView()
+                }
                 .navigationTitle("Activity")
                 .toolbarTitleDisplayMode(.inlineLarge)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            
+                            showsCalendar = true
                         } label: {
                             Image(systemName: "calendar")
                         }

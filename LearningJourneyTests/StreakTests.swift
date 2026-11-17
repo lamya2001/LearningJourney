@@ -192,5 +192,34 @@ struct StreakTests {
     }
 
     
+    @Test func monthsRunFromEarliestGoalToCurrentMonth() {
+        let calendar = Calendar.current
+        let old = LearningGoal(name: "Swift", duration: .week)
+        old.startDate = calendar.date(from: DateComponents(year: 2026, month: 1, day: 20))!
+        let recent = LearningGoal(name: "SwiftUI", duration: .month)
+        recent.startDate = calendar.date(from: DateComponents(year: 2026, month: 3, day: 5))!
+        let now = calendar.date(from: DateComponents(year: 2026, month: 4, day: 10))!
+
+        let viewModel = ActivityCalendarViewModel(goals: [recent, old], now: now)
+        let months = viewModel.months.map { calendar.component(.month, from: $0) }
+
+        #expect(months == [1, 2, 3, 4])
+    }
+
+    @Test func noGoalsMeansNoMonths() {
+        #expect(ActivityCalendarViewModel(goals: []).months.isEmpty)
+    }
     
+    @Test func learnedWinsOverFreezeOnTheSameDay() {
+        let calendar = Calendar.current
+        let day = calendar.date(from: DateComponents(year: 2026, month: 2, day: 10, hour: 9))!
+
+        let first = LearningGoal(name: "A", duration: .week)
+        first.logs = [DayLog(dayStatus: .freeze, loggedAt: day)]
+        let second = LearningGoal(name: "B", duration: .week)
+        second.logs = [DayLog(dayStatus: .learned, loggedAt: day)]
+
+        let viewModel = ActivityCalendarViewModel(goals: [first, second], now: day)
+        #expect(viewModel.status(on: day) == .learned)
+    }
 }
