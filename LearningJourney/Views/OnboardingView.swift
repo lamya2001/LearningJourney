@@ -50,10 +50,10 @@ struct OnboardingView : View {
             }
         }.padding(.horizontal,16)
          .padding(.top, 68)
-         //.preferredColorScheme(.dark)
     }
 }
 
 #Preview {
     OnboardingView()
+        .preferredColorScheme(.dark)
 }

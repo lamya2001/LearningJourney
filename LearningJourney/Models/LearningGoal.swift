@@ -24,8 +24,21 @@ nonisolated enum GoalDuration : CaseIterable , Codable{
         case .year : return 96
         }
     }
+    
+    var calendarUnit : Calendar.Component{
+        switch self {
+        case .week : return .weekOfYear
+        case .month : return .month
+        case .year : return .year
+        }
+    }
 }
 
+nonisolated enum GoalProgress {
+    case active
+    case succeeded
+    case failed
+}
 
 @Model
 class LearningGoal{
@@ -41,6 +54,20 @@ class LearningGoal{
     var usedFreezes: Int{
         logs.filter { $0.dayStatus == .freeze}.count
 
+    }
+    
+    var endDate: Date {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: startDate)
+        return calendar.date(byAdding: duration.calendarUnit, value: 1, to: start) ?? .distantFuture //??
+    }
+    
+    var hasFullCoverage: Bool {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: startDate)
+        guard let totalDays = calendar.dateComponents([.day], from: start, to: endDate).day else { return false }
+        let loggedDays = logs.filter { $0.loggedAt >= start && $0.loggedAt < endDate }.count
+        return loggedDays >= totalDays
     }
     
     init(name: String, duration: GoalDuration) {

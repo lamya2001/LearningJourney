@@ -110,4 +110,68 @@ struct StreakTests {
         #expect(goal.logs.first?.dayStatus == .learned)
         #expect(goal.usedFreezes == 0)
     }
+    
+    @Test func goalSucceedsWhenEveryDayIsLogged() {
+        let calendar = Calendar.current
+        let start = calendar.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 15))!
+
+        let goal = LearningGoal(name: "Swift", duration: .week)
+        goal.startDate = start
+        goal.logs = (0..<7).map { i in
+            DayLog(dayStatus: i < 2 ? .freeze : .learned,
+                   loggedAt: calendar.date(byAdding: .day, value: i, to: start)!)
+        }
+
+        let viewModel = ActivityViewModel(goal: goal)
+        viewModel.now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 8, hour: 10))!
+
+        #expect(viewModel.progress == .succeeded)
+    }
+
+    @Test func goalFailsWhenADayIsMissing() {
+        let calendar = Calendar.current
+        let start = calendar.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 15))!
+
+        let goal = LearningGoal(name: "Swift", duration: .week)
+        goal.startDate = start
+        goal.logs = (0..<7).filter { $0 != 3 }.map { i in
+            DayLog(dayStatus: .learned,
+                   loggedAt: calendar.date(byAdding: .day, value: i, to: start)!)
+        }
+
+        let viewModel = ActivityViewModel(goal: goal)
+        viewModel.now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 8, hour: 10))!
+
+        #expect(viewModel.progress == .failed)
+    }
+
+    @Test func goalIsActiveBeforeItsEnd() {
+        let calendar = Calendar.current
+        let start = calendar.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 15))!
+
+        let goal = LearningGoal(name: "Swift", duration: .week)
+        goal.startDate = start
+
+        let viewModel = ActivityViewModel(goal: goal)
+        viewModel.now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 7, hour: 23))!
+
+        #expect(viewModel.progress == .active)
+    }
+    
+    @Test func cannotLogOrFreezeAfterGoalEnds() {
+        let calendar = Calendar.current
+        let start = calendar.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 15))!
+
+        let goal = LearningGoal(name: "Swift", duration: .week)
+        goal.startDate = start
+        let viewModel = ActivityViewModel(goal: goal)
+
+        viewModel.now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 7, hour: 23))!
+        #expect(viewModel.canLogToday == true)
+        #expect(viewModel.canFreezeToday == true)
+
+        viewModel.now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 8, hour: 10))!
+        #expect(viewModel.canLogToday == false)
+        #expect(viewModel.canFreezeToday == false)
+    }
 }

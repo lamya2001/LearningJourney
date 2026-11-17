@@ -47,39 +47,50 @@ struct ActivityView : View {
                         StatCard(icon: "snowflake", tint: .freeze, value: viewModel.freezeCount, label: "Freezed")
                     }
                 }
-                Spacer()
-                
-                Button{
-                    viewModel.logLearned(context : modelContext)
-                } label: {
-                    Text(viewModel.canLogToday ? "Log as Learned" : "Logged as Learned")                        .font(.body.bold())
-                        .foregroundStyle(logButtonTextColor)
-                        .frame(width: 272, height: 272)
+                switch viewModel.progress {
+                case .active:
+                    Spacer()
                     
-                }.buttonStyle(.plain)
-                    .glassEffect(.regular.tint(viewModel.canLogToday ? .brandPrimary : .clear).interactive(), in: .circle)
-                    .disabled(!viewModel.canLogToday)
-                
-                Spacer()
-                
-                VStack(spacing: 16) {
-                    
-                    Button {
-                        viewModel.logFreeze(context: modelContext)
+                    Button{
+                        viewModel.logLearned(context : modelContext)
                     } label: {
-                        Text("Freeze for a day")
-                            .frame(width: 230)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .tint(.freeze)
-                    .controlSize(.large)
-                    .disabled(!viewModel.canFreezeToday)
+                        Text(viewModel.canLogToday ? "Log as Learned" : "Logged as Learned")                        .font(.body.bold())
+                            .foregroundStyle(logButtonTextColor)
+                            .frame(width: 272, height: 272)
+                        
+                    }.buttonStyle(.plain)
+                        .glassEffect(.regular.tint(viewModel.canLogToday ? .brandPrimary : .clear).interactive(), in: .circle)
+                        .disabled(!viewModel.canLogToday)
                     
-                    Text(viewModel.freezeUsageText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Spacer()
+                    
+                    VStack(spacing: 16) {
+                        
+                        Button {
+                            viewModel.logFreeze(context: modelContext)
+                        } label: {
+                            Text("Freeze for a day")
+                                .frame(width: 230)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(.freeze)
+                        .controlSize(.large)
+                        .disabled(!viewModel.canFreezeToday)
+                        
+                        Text(viewModel.freezeUsageText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                case .succeeded, .failed:
+                    Spacer()
+                    
+                    GoalCompleted(progress: viewModel.progress) {
+                        // Set a goal: يفتح شاشة هدف جديد
+                    }
+                    
+                    Spacer()
                 }
-                Spacer()
                 
             }.padding(.horizontal, 16)
             
@@ -103,29 +114,31 @@ struct ActivityView : View {
                         }
                     }
                 }
-            
-            
-            
-        }.preferredColorScheme(.dark)
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+        }.onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
                 viewModel.refresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
-                            if newPhase == .active {
-                                viewModel.refresh()
-                            }
-                        }
+                if newPhase == .active {
+                    viewModel.refresh()
+                }
+            }
     }
 }
 
 
-#Preview {
+#Preview("Succeeded") {
     let goal = LearningGoal(name: "Swift", duration: .week)
-    goal.startDate = Date().addingTimeInterval(-4 * 24 * 3600)
-    goal.logs = [
-        DayLog(dayStatus: .learned, loggedAt: Date().addingTimeInterval(-3 * 24 * 3600)),
-        DayLog(dayStatus: .learned, loggedAt: Date().addingTimeInterval(-2 * 24 * 3600)),
-        DayLog(dayStatus: .freeze,  loggedAt: Date().addingTimeInterval(-1 * 24 * 3600))
-    ]
+    goal.startDate = Date().addingTimeInterval(-8 * 24 * 3600)
+    goal.logs = (2...8).map { i in
+        DayLog(dayStatus: .learned, loggedAt: Date().addingTimeInterval(Double(-i) * 24 * 3600))
+    }
     return ActivityView(goal: goal)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Failed") {
+    let goal = LearningGoal(name: "Swift", duration: .week)
+    goal.startDate = Date().addingTimeInterval(-8 * 24 * 3600)
+    return ActivityView(goal: goal)
+        .preferredColorScheme(.dark)
 }

@@ -2,6 +2,8 @@ import Observation
 import Foundation
 import SwiftData
 
+
+
 @Observable
 class ActivityViewModel {
     let goal: LearningGoal
@@ -22,11 +24,11 @@ class ActivityViewModel {
     }
 
     var canLogToday: Bool {
-        todayStatus != .learned
+        progress == .active && todayStatus != .learned
     }
 
     var canFreezeToday: Bool {
-        todayStatus == nil && goal.usedFreezes < goal.duration.freezeLimit
+        progress == .active && todayStatus == nil && goal.usedFreezes < goal.duration.freezeLimit
     }
     
     // MARK: - Actions
@@ -50,7 +52,6 @@ class ActivityViewModel {
     }
 
     private func record(_ status: DayStatus, context: ModelContext) {
-        guard canLogToday else { return }//delete
         let log = DayLog(dayStatus: status)
         context.insert(log)
         goal.logs.append(log)
@@ -106,5 +107,12 @@ class ActivityViewModel {
 
     func status(on day: Date) -> DayStatus? {
         goal.log(on: day)?.dayStatus
+    }
+    
+    //MARK: - Goal Completion
+    
+    var progress: GoalProgress {
+        guard now >= goal.endDate else { return .active }
+        return goal.hasFullCoverage ? .succeeded : .failed
     }
 }
