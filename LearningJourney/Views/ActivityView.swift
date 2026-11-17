@@ -5,6 +5,7 @@ struct ActivityView : View {
     @State private var viewModel: ActivityViewModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
+    @State private var showsEditor = false
     
     init(goal: LearningGoal) {
         _viewModel = State(initialValue: ActivityViewModel(goal: goal))
@@ -86,15 +87,16 @@ struct ActivityView : View {
                     Spacer()
                     
                     GoalCompleted(progress: viewModel.progress) {
-                        // Set a goal: يفتح شاشة هدف جديد
+                        showsEditor = true
                     }
                     
                     Spacer()
                 }
                 
             }.padding(.horizontal, 16)
-            
-            
+                .navigationDestination(isPresented: $showsEditor) {
+                    GoalEditorView(editing: viewModel.progress == .active ? viewModel.goal : nil)
+                }
                 .navigationTitle("Activity")
                 .toolbarTitleDisplayMode(.inlineLarge)
                 .toolbar {
@@ -108,7 +110,7 @@ struct ActivityView : View {
                     ToolbarSpacer(.fixed, placement: .topBarTrailing)
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            
+                            showsEditor = true
                         } label: {
                             Image(systemName: "pencil.and.outline")
                         }

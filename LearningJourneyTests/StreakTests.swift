@@ -174,4 +174,23 @@ struct StreakTests {
         #expect(viewModel.canLogToday == false)
         #expect(viewModel.canFreezeToday == false)
     }
+    
+    @Test func prepareFillsDraftFromCurrentGoalOrStartsEmpty() {
+        let editor = GoalEditorViewModel()
+        let goal = LearningGoal(name: "Swift", duration: .month)
+
+        editor.prepare(editing: goal)
+        #expect(editor.draft.name == "Swift")
+        #expect(editor.draft.duration == .month)
+        #expect(editor.draft !== goal)
+
+        editor.draft.name = "changed"
+        editor.prepare(editing: nil)
+        #expect(editor.draft.name == "")
+        #expect(editor.draft.duration == .week)
+        #expect(goal.name == "Swift")
+    }
+
+    
+    
 }
