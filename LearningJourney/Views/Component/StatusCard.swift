@@ -27,7 +27,6 @@ struct StatCard: View {
         .frame(maxWidth: .infinity)
         .frame(height: 100)
         .glassEffect(.clear, in: .rect(cornerRadius: 34))
-        .preferredColorScheme(.dark)
     }
 }
 
