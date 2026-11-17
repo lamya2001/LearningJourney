@@ -3,7 +3,7 @@ import SwiftUI
 
 extension ShapeStyle where Self == Color {
     static var brandPrimary: Color {
-        Color.orange
+        Color.orangeB
     }
     
     static var freeze: Color {

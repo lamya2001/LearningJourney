@@ -7,10 +7,10 @@ struct LearningJourneyApp: App {
     var body: some Scene {
         WindowGroup {
             if hasSeenOnboarding {
-                StreakView()
+                ActivityLoader()
             }else{
                 OnboardingView()
             }
-        }.modelContainer(for: LearningGoal.self)
+        }.modelContainer(for:[LearningGoal.self, DayLog.self])
     }
 }
