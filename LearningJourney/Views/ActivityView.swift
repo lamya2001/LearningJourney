@@ -133,18 +133,74 @@ struct ActivityView : View {
 
 
 #Preview("Succeeded") {
-    let goal = LearningGoal(name: "Swift", duration: .week)
-    goal.startDate = Date().addingTimeInterval(-8 * 24 * 3600)
-    goal.logs = (2...8).map { i in
-        DayLog(dayStatus: .learned, loggedAt: Date().addingTimeInterval(Double(-i) * 24 * 3600))
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
+
+    func day(_ offset: Int) -> Date {
+        calendar.date(byAdding: .day, value: -offset, to: today)!
+            .addingTimeInterval(20 * 3600)
     }
+
+    let goal = LearningGoal(name: "Swift", duration: .week)
+    goal.startDate = calendar.date(byAdding: .day, value: -7, to: today)!
+    goal.logs = [
+        DayLog(dayStatus: .learned, loggedAt: day(7)),
+        DayLog(dayStatus: .learned, loggedAt: day(6)),
+        DayLog(dayStatus: .freeze,  loggedAt: day(5)),
+        DayLog(dayStatus: .learned, loggedAt: day(4)),
+        DayLog(dayStatus: .learned, loggedAt: day(3)),
+        DayLog(dayStatus: .freeze,  loggedAt: day(2)),
+        DayLog(dayStatus: .learned, loggedAt: day(1))
+    ]
+
     return ActivityView(goal: goal)
         .preferredColorScheme(.dark)
 }
+#Preview("activity") {
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
 
-#Preview("Failed") {
+    func day(_ offset: Int) -> Date {
+        calendar.date(byAdding: .day, value: -offset, to: today)!
+            .addingTimeInterval(20 * 3600)
+    }
+
     let goal = LearningGoal(name: "Swift", duration: .week)
-    goal.startDate = Date().addingTimeInterval(-8 * 24 * 3600)
+    goal.startDate = calendar.date(byAdding: .day, value: -6, to: today)!
+    goal.logs = [
+       // DayLog(dayStatus: .learned, loggedAt: day(7)),
+        DayLog(dayStatus: .learned, loggedAt: day(6)),
+        DayLog(dayStatus: .learned,  loggedAt: day(5)),
+        DayLog(dayStatus: .learned, loggedAt: day(4)),
+        DayLog(dayStatus: .learned, loggedAt: day(3)),
+        DayLog(dayStatus: .freeze,  loggedAt: day(2)),
+        DayLog(dayStatus: .learned, loggedAt: day(1))
+    ]
+
+    return ActivityView(goal: goal)
+        .preferredColorScheme(.dark)
+}
+#Preview("Failed") {
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
+
+    func day(_ offset: Int) -> Date {
+        calendar.date(byAdding: .day, value: -offset, to: today)!
+            .addingTimeInterval(20 * 3600)
+    }
+
+    let goal = LearningGoal(name: "Swift", duration: .week)
+    goal.startDate = calendar.date(byAdding: .day, value: -7, to: today)!
+    goal.logs = [
+        DayLog(dayStatus: .learned, loggedAt: day(7)),
+        DayLog(dayStatus: .learned, loggedAt: day(6)),
+        DayLog(dayStatus: .freeze,  loggedAt: day(5)),
+        DayLog(dayStatus: .learned, loggedAt: day(4)),
+        // day(3) is missing on purpose
+        DayLog(dayStatus: .freeze,  loggedAt: day(2)),
+        DayLog(dayStatus: .learned, loggedAt: day(1))
+    ]
+
     return ActivityView(goal: goal)
         .preferredColorScheme(.dark)
 }
