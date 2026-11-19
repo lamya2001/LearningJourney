@@ -9,37 +9,22 @@
 
 **Build a daily learning habit. Set a goal, log every day you learned, and protect your streak with freeze days.**
 
-![iOS 27+](https://img.shields.io/badge/iOS-27%2B-000000?logo=apple&logoColor=white)
+![iOS 27+](https://img.shields.io/badge/iOS-27%2B-111111?logo=apple&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-FF9230?logo=swift&logoColor=white)
-![SwiftData](https://img.shields.io/badge/SwiftData-3FA7C4)
-![MVVM](https://img.shields.io/badge/Architecture-MVVM-555555)
+![SwiftData](https://img.shields.io/badge/SwiftData-111111)
+![MVVM](https://img.shields.io/badge/Architecture-MVVM-111111)
 
 </div>
 
-## Screens
-
-| Onboarding | Activity | Calendar |
-|:---:|:---:|:---:|
-| <img src="screenshots/01-onboarding.png" width="220" alt="Onboarding"> | <img src="screenshots/02-activity.png" width="220" alt="Activity"> | <img src="screenshots/06-calendar.png" width="220" alt="Calendar"> |
-
-| Goal achieved | Goal missed | Change goal | Update confirmation |
-|:---:|:---:|:---:|:---:|
-| <img src="screenshots/03-goal-success.png" width="190" alt="Goal achieved"> | <img src="screenshots/04-goal-failed.png" width="190" alt="Goal missed"> | <img src="screenshots/05-edit-goal.png" width="190" alt="Change goal"> | <img src="screenshots/edit-confirm.png" width="190" alt="Update confirmation"> |
-
-### Demo
-
-[Watch the demo](screenshots/demo.mp4)
-
 ## Features
 
-- **Onboarding** (first launch only): choose what you want to learn and for how long (a week, a month, or a year).
-- **Activity**
-  - Week strip with the status of every day.
-  - Streak and freeze cards.
-  - **Log as Learned** and **Freeze for a day** buttons, with the freeze usage under them.
-- **Goal completion**: when the goal period ends, the screen shows a success or a failure message and lets you set a new goal.
-- **Change goal**: update the current goal (with a warning that the streak starts over), or set a new one after completion.
-- **Calendar**: a view-only calendar with all previous learned and frozen days.
+- 🎯 **Set a goal** for a week, a month, or a year
+- ✅ **Log every day** you learned
+- 🔥 **Build a streak** with consecutive learned days
+- ❄️ **Freeze a day** without losing your streak
+- 🗓️ **Calendar** with all your previous days
+- 🏁 **Goal result**: achieved or missed, then start a new goal
+- ✏️ **Change your goal** anytime
 
 ## Rules
 
@@ -89,6 +74,16 @@ flowchart LR
     GoalEditorViewModel --> LearningGoal
     ActivityCalendarViewModel --> LearningGoal
     LearningGoal --> DayLog
+
+    classDef dark fill:#111111,stroke:#111111,color:#ffffff
+    classDef accent fill:#FF9230,stroke:#FF9230,color:#111111
+    class OnboardingView,ActivityView,GoalEditorView,ActivityCalendarView dark
+    class OnboardingViewModel,ActivityViewModel,GoalEditorViewModel,ActivityCalendarViewModel dark
+    class LearningGoal,DayLog accent
+    style Views fill:none,stroke:#888888
+    style ViewModels fill:none,stroke:#888888
+    style Models fill:none,stroke:#888888
+    linkStyle default stroke:#888888,stroke-width:1.5px
 ```
 
 - **Models**: `LearningGoal` and `DayLog` (SwiftData), plus `GoalDuration`, `DayStatus` and `GoalProgress`. They hold the data and the rules about the data (end date, used freezes, day coverage).
